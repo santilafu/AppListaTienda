@@ -20,11 +20,16 @@ import com.example.ejercicio4.ui.theme.Ejercicio4Theme
 import androidx.navigation.compose.*
 import androidx.compose.material3.Button
 import androidx.compose.foundation.layout.Column
-
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
 
 
 // Clase Producto y lista de productos
-data class Producto(val nombre: String, val precio: Double, val descripcion: String)
+data class Producto(val nombre: String, val precio: Double, val descripcion: String,val imagen: Int)
 
 // Lista de productos (24 productos)
 val listaProductos = listOf(
@@ -71,17 +76,42 @@ fun ListaProductos(navController: NavHostController) {
 
 @Composable
 fun DetalleProducto(index: Int, navController: NavHostController) {
+    // Obtener el producto seleccionado
     val producto = listaProductos[index]
+
     // Mostrar detalles del producto y el botón para volver atrás
-    Column (modifier = Modifier.padding(16.dp)){
-        Text(text = "Producto: ${producto.nombre}")
-        Text(text = "Precio: ${producto.precio} €")
-        Text(text = "Descripción: ${producto.descripcion}")
+    Column (modifier = Modifier
+        .fillMaxSize()//Ocupa todo el espacio disponible
+        .padding(24.dp), //deja espacio en los bordes
+        horizontalAlignment = Alignment.CenterHorizontally //Centrar horizontalmente
+    ) {
+        //Titulo
+
+        Text(
+            text = producto.nombre,
+            fontSize = 24.sp, //Tamaño de fuente más grande para el título
+            fontWeight = FontWeight.Bold //Texto en negrita
+            )
+        Spacer(modifier = Modifier.padding(10.dp))
+
+        //Precio
+        Text(
+            text = "Precio: ${producto.precio} €",
+        fontSize = 18.sp//Tamaño de fuente más grande para el precio
+        )
+        Spacer(modifier = Modifier.padding(10.dp))
+
+        //Descripción
+        Text(
+            text = "Descripción: ${producto.descripcion}",
+            fontSize = 16.sp//Tamaño de fuente más grande para la descripción
+            )
+        Spacer(modifier = Modifier.weight(1f)) //Espacio flexible para empujar el botón hacia abajo
 
         //Botón para volver atrás
         Button(
             onClick = { navController.popBackStack() },
-            modifier = Modifier.padding(top = 100.dp)
+            modifier = Modifier.fillMaxWidth()//El botón ocupa todo el ancho disponible
         ) {
             Text("Volver Atrás")
         }
