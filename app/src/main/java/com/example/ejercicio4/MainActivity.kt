@@ -4,41 +4,45 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material3.Text
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.ejercicio4.ui.theme.Ejercicio4Theme
-import androidx.navigation.compose.*
-import androidx.compose.material3.Button
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.sp
 
+// Clase Producto
+data class Producto(
+    val nombre: String,
+    val precio: Double,
+    val descripcion: String,
+    val imagen: Int
+)
 
-// Clase Producto y lista de productos
-data class Producto(val nombre: String, val precio: Double, val descripcion: String,val imagen: Int)
-
-// Lista de productos (24 productos)
+// Lista de productos
 val listaProductos = listOf(
     Producto("Laptop", 999.99, "Una laptop potente para todas tus necesidades.", R.drawable.laptop),
     Producto("Smartphone", 699.99, "Un smartphone con una cámara increíble.", R.drawable.smartphone),
     Producto("Auriculares", 199.99, "Auriculares con cancelación de ruido.", R.drawable.auriculares),
     Producto("Monitor", 299.99, "Monitor 4K para una experiencia visual impresionante.", R.drawable.monitor),
-    Producto("Teclado", 89.99, "Teclado mecánico para una escritura cómoda.",R.drawable.teclado),
-    Producto("Impresora", 149.99, "Impresora multifuncional para el hogar y la oficina.",R.drawable.impresora),
+    Producto("Teclado", 89.99, "Teclado mecánico para una escritura cómoda.", R.drawable.teclado),
+    Producto("Impresora", 149.99, "Impresora multifuncional para el hogar y la oficina.", R.drawable.impresora),
     Producto("Tablet", 399.99, "Tablet ligera y potente para entretenimiento y trabajo.", R.drawable.tablet),
     Producto("Cámara", 549.99, "Cámara digital para capturar tus momentos favoritos.", R.drawable.camara),
     Producto("Altavoz Bluetooth", 129.99, "Altavoz portátil con sonido de alta calidad.", R.drawable.altavozbluetooth),
@@ -63,62 +67,59 @@ val listaProductos = listOf(
 fun ListaProductos(navController: NavHostController) {
     LazyColumn {
         itemsIndexed(listaProductos) { index, producto ->
-            Text(
-                text = "${producto.nombre} - ${producto.precio}€",
+            Row(
                 modifier = Modifier
-                    .padding(16.dp)
                     .clickable { navController.navigate("detalle/$index") }
-            )
+                    .padding(16.dp)
+            ) {
+                Image(
+                    painter = painterResource(id = producto.imagen),
+                    contentDescription = producto.nombre,
+                    modifier = Modifier
+                        .size(80.dp)
+                        .clip(RoundedCornerShape(8.dp)),
+                    contentScale = ContentScale.Crop
+                )
+                Spacer(modifier = Modifier.padding(8.dp))
+                Column {
+                    Text(text = producto.nombre, fontSize = 18.sp)
+                    Text(text = "${producto.precio}€", fontSize = 14.sp)
+                }
+            }
         }
-
     }
 }
 
 @Composable
 fun DetalleProducto(index: Int, navController: NavHostController) {
-    // Obtener el producto seleccionado
     val producto = listaProductos[index]
 
-    // Mostrar detalles del producto y el botón para volver atrás
-    Column (modifier = Modifier
-        .fillMaxSize()//Ocupa todo el espacio disponible
-        .padding(24.dp), //deja espacio en los bordes
-        horizontalAlignment = Alignment.CenterHorizontally //Centrar horizontalmente
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        //Titulo
-
-        Text(
-            text = producto.nombre,
-            fontSize = 24.sp, //Tamaño de fuente más grande para el título
-            fontWeight = FontWeight.Bold //Texto en negrita
-            )
+        Text(text = producto.nombre, fontSize = 24.sp, fontWeight = FontWeight.Bold)
         Spacer(modifier = Modifier.padding(10.dp))
-
-        //Precio
-        Text(
-            text = "Precio: ${producto.precio} €",
-        fontSize = 18.sp//Tamaño de fuente más grande para el precio
+        Image(
+            painter = painterResource(id = producto.imagen),
+            contentDescription = producto.nombre,
+            modifier = Modifier
+                .size(200.dp)
+                .clip(RoundedCornerShape(12.dp)),
+            contentScale = ContentScale.Crop
         )
         Spacer(modifier = Modifier.padding(10.dp))
-
-        //Descripción
-        Text(
-            text = "Descripción: ${producto.descripcion}",
-            fontSize = 16.sp//Tamaño de fuente más grande para la descripción
-            )
-        Spacer(modifier = Modifier.weight(1f)) //Espacio flexible para empujar el botón hacia abajo
-
-        //Botón para volver atrás
-        Button(
-            onClick = { navController.popBackStack() },
-            modifier = Modifier.fillMaxWidth()//El botón ocupa todo el ancho disponible
-        ) {
+        Text(text = "Precio: ${producto.precio} €", fontSize = 18.sp)
+        Spacer(modifier = Modifier.padding(10.dp))
+        Text(text = producto.descripcion, fontSize = 16.sp)
+        Spacer(modifier = Modifier.weight(1f))
+        Button(onClick = { navController.popBackStack() }, modifier = Modifier.fillMaxWidth()) {
             Text("Volver Atrás")
         }
-
     }
 }
-
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -127,11 +128,39 @@ class MainActivity : ComponentActivity() {
         setContent {
             Ejercicio4Theme {
                 val navController = rememberNavController()
-                NavHost(navController = navController, startDestination = "lista") {
-                    composable("lista") { ListaProductos(navController) }
-                    composable("detalle/{index}") { backStackEntry ->
-                        val i = backStackEntry.arguments?.getString("index")!!.toInt()
-                        DetalleProducto(i, navController)
+                @OptIn(ExperimentalMaterial3Api::class)
+                Scaffold(
+                    topBar = {
+                        TopAppBar(
+                            title = {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Image(
+                                        painter = painterResource(id = R.drawable.logotiendapc),
+                                        contentDescription = "Logo de la tienda",
+                                        modifier = Modifier
+                                            .size(150.dp)
+                                            .padding(end = 8.dp)
+                                    )
+                                    Text("PCEQUIPOS", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                                }
+                            },
+                            colors = TopAppBarDefaults.topAppBarColors(containerColor = Color(
+                                0xFFEE7B3B
+                            ),
+                                titleContentColor = Color.White )
+                        )
+                    }
+                ) { innerPadding ->
+                    NavHost(
+                        navController = navController,
+                        startDestination = "lista",
+                        modifier = Modifier.padding(innerPadding)
+                    ) {
+                        composable("lista") { ListaProductos(navController) }
+                        composable("detalle/{index}") { backStackEntry ->
+                            val i = backStackEntry.arguments?.getString("index")!!.toInt()
+                            DetalleProducto(i, navController)
+                        }
                     }
                 }
             }
